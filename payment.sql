@@ -46,21 +46,17 @@ ALTER TABLE TRANSACTION
 ADD FOREIGN KEY(TRS_FROM_ACCOUNT) 
 REFERENCES ACCOUNT(ACC_NUMBER) ON UPDATE CASCADE ON DELETE CASCADE;
 
--- SELECT all account;
-SELECT * FROM account;
+-- Customer acc number and total of his account balance;
+SELECT COUNT(account.acc_number) AS account_number, SUM(account.acc_balance) AS account_total_balance, CONCAT(customer.cust_firstname, ' ', customer.cust_lastname) AS name FROM account JOIN customer ON account.acc_owner = customer.cust_id WHERE account.acc_owner = 2 GROUP BY customer.cust_id;
 
--- SELECT all transaction;
-SELECT * FROM transaction;
+-- Customers acc number and total of all account balance;
+SELECT COUNT(account.acc_number) AS account_number, SUM(account.acc_balance) AS account_total_balance, CONCAT(customer.cust_firstname, ' ', customer.cust_lastname) AS name FROM account JOIN customer ON account.acc_owner = customer.cust_id GROUP BY customer.cust_id;
 
--- SELECT all transaction between user created, acc number and date transaction;
--- JOIN in account and transaction tables;
-SELECT customer.cust_id, transaction.trs_amount, transaction.trs_from_account, transaction.trs_type, account.acc_number  FROM customer JOIN account ON account.acc_owner = customer.cust_id JOIN transaction ON transaction.trs_from_account = customer.cust_id WHERE customer.cust_id = 3;
+-- All transaction that made by all customer sorted by acc_number and trs_date;
+SELECT transaction.trs_from_account AS my_account_number, transaction.trs_amount AS transfer_amount, transaction.trs_type AS transfer_type, transaction.trs_date AS transfer_date FROM transaction JOIN account ON transaction.trs_from_account = account.acc_number;
 
--- SELECT all customer;
-SELECT * FROM customer;
-
--- SELECT all transaction transfer;
-SELECT * FROM transaction_transfer;
+-- ALl transaction that made by john michael sorted by acc_number and trs_date;
+SELECT transaction.trs_from_account AS my_account_number, transaction.trs_amount AS transfer_amount, transaction.trs_type AS transfer_type, transaction.trs_date AS transfer_date FROM transaction JOIN account ON transaction.trs_from_account = account.acc_number WHERE transaction.trs_from_account = '1202040-C' ORDER BY transaction.trs_from_account ASC;
 
 -- ADDING customer data;
 INSERT INTO customer 
@@ -77,19 +73,19 @@ VALUES
 INSERT INTO ACCOUNT
     (ACC_NUMBER, ACC_OWNER, ACC_DATE_CREATED, ACC_BALANCE)
 VALUES
-    ('1272023-B', 1, '20-01-2017', 10000000);
+    ('456789-B', 2, '20-01-2017', 10000000);
 
 -- ADDING new customer account from john;
 INSERT INTO ACCOUNT
     (ACC_NUMBER, ACC_OWNER, ACC_DATE_CREATED, ACC_BALANCE)
 VALUES
-    ('1202010-C', 3, '20-01-2020', 100000000);
+    ('1202040-C', 3, '20-01-2020', 100000000);
 
 -- Make Transaction;
 INSERT INTO transaction
     (TRS_ID, TRS_FROM_ACCOUNT, TRS_DATE, TRS_AMOUNT, TRS_TYPE)
 VALUES
-    (91, '1272023-B', '12-12-2021', 100000, 'TF');
+    (81, '1202040-C', '12-12-2021', 9000, 'DB');
 
 -- Make transaction;
 INSERT INTO transaction
@@ -101,7 +97,7 @@ VALUES
 INSERT INTO TRANSACTION_TRANSFER
     (TRS_ID, TRS_TO_ACCOUNT, TRS_STATUS)
 VALUES
-    (91, '122023-A', 1);
+    (81, '1272023-B', 1);
 
 -- TRANSACTION result;
 INSERT INTO TRANSACTION_TRANSFER
